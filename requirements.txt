@@ -1,0 +1,6 @@
+sqlalchemy
+SQLAlchemy-serializer
+sqlalchemy-migrate
+redis
+flask
+sqliteschema
