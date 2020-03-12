@@ -25,6 +25,7 @@ def _action(data, message_class):
     except KeyError as ke:
         return _get_error_response("Missing parameter {}".format(ke.args[0]), 404)
     GardenerMessenger(rh, rp).put_message(message_class(lifeline_id))
+    #TODO not only 200, but real response
     return _get_request_response({}, 200)
 
 
