@@ -1,11 +1,12 @@
 from sqlalchemy import Column, Integer, String, Time, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy_serializer import SerializerMixin
 
 Base = declarative_base()
 
 
-class Tool(Base):
+class Tool(Base, SerializerMixin):
     __tablename__ = "tool"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
@@ -18,7 +19,7 @@ class Tool(Base):
     }
 
 
-class GardenTool(Tool):
+class GardenTool(Tool, SerializerMixin):
     __tablename__ = "garden_tool"
 
     __mapper_args__ = {
@@ -29,7 +30,7 @@ class GardenTool(Tool):
     plugin_core_id = Column(Integer, ForeignKey("plugin_core.id"), name="pcid", unique=True)
 
 
-class Sensor(Tool):
+class Sensor(Tool, SerializerMixin):
     __tablename__ = "sensor"
 
     __mapper_args__ = {
@@ -40,7 +41,7 @@ class Sensor(Tool):
     plugin_core_id = Column(Integer, ForeignKey("plugin_core.id"), name="pcid", unique=True)
 
 
-class PluginCore(Base):
+class PluginCore(Base, SerializerMixin):
     __tablename__ = "plugin_core"
 
     id = Column(Integer, primary_key=True)
@@ -68,7 +69,7 @@ class SensedPluginCore(PluginCore):
     sensor = relationship("Sensor", cascade="all, delete-orphan", uselist=False)
 
 
-class Plant(Base):
+class Plant(Base, SerializerMixin):
     __tablename__ = "plant"
     __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -77,7 +78,7 @@ class Plant(Base):
     lifelines = relationship("Lifeline", cascade="all, delete-orphan")
 
 
-class Lifeline(Base):
+class Lifeline(Base, SerializerMixin):
     __tablename__ = "lifeline"
     __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -87,7 +88,7 @@ class Lifeline(Base):
     requirements = relationship("Requirement", cascade="all, delete-orphan")
 
 
-class Requirement(Base):
+class Requirement(Base, SerializerMixin):
     __tablename__ = "requirement"
 
     id = Column(String, primary_key=True)
@@ -119,7 +120,7 @@ class SensedRequirement(Requirement):
     max_value = Column(Integer, nullable=False)
 
 
-class TimeInterval(Base):
+class TimeInterval(Base, SerializerMixin):
     __tablename__ = "time_interval"
     __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True, autoincrement=True)
