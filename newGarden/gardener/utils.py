@@ -14,16 +14,6 @@ def is_time_in_range(start: time, now: time, end: time) -> bool:
     )
 
 
-def get_lifeline_duration(duration: str) -> int:
-    value, unit = _get_lifeline_duration(duration)
-    return UNIT_MAP[unit](value)
-
-
-def _get_lifeline_duration(duration: str) -> tuple:
-    matched = compile('(?P<value>\d+)(?P<unit>\w)').match(duration)
-    return int(matched.group('value')), matched.group('unit')
-
-
 def minute_to_sec(minute):
     return minute * 60
 

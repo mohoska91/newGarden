@@ -53,6 +53,7 @@ class TimerPlugin(Plugin):
             for interval in self._timed_requirement.time_intervals
         )
         if state != self._state:
+            print(self.__class__, self._tool.name, " control")
             self._connector.set_gpio(self._tool.gpio, state)
             self._state = state
 
@@ -75,6 +76,7 @@ class SensorPlugin(Plugin):
         sensed = RawSensing.sense(self._sensor)
         state = sensed <= self._sensed_requirement.min_value
         if state != self._state:
+            print(self.__class__, self._tool.name,  " control")
             self._connector.set_gpio(self._tool.gpio, state)
             self._state = state
 
