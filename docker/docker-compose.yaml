@@ -1,0 +1,65 @@
+version: "3.3"
+
+services:
+  configdb:
+      container_name: configdb
+      image: redis:latest
+      ports:
+        - "6379:6379"
+      volumes:
+        - ../configdb/data:/data
+      deploy:
+        resources:
+          limits:
+            memory: 100M
+
+  gardenapp:
+    depends_on:
+      - "configdb"
+    container_name: gardenapp
+    image: python:latest
+    ports:
+      - "5001:5001"
+    volumes:
+      - ../bin:/scripts
+      - ../newGarden:/newGarden
+      - ../requirements.txt:/requirements.txt
+      - ./servicecontext:/servicecontext
+    environment:
+      - PYTHONPATH=/newGarden
+    entrypoint:
+      - /servicecontext/gardenserver
+
+  gardener:
+    depends_on:
+      - "gardenapp"
+    container_name: gardener
+    image: python:latest
+    volumes:
+      - ../bin:/scripts
+      - ../newGarden:/newGarden
+      - ../requirements.txt:/requirements.txt
+      - ./servicecontext:/servicecontext
+    environment:
+      - PYTHONPATH=/newGarden
+    entrypoint:
+      - /servicecontext/gardening
+
+
+
+  gpiohandler:
+      depends_on:
+        - "configdb"
+      container_name: gpiohandler
+      image: python:latest
+      ports:
+        - "5000:5000"
+      volumes:
+        - ../bin:/scripts
+        - ../newGarden:/newGarden
+        - ../requirements.txt:/requirements.txt
+        - ./servicecontext:/servicecontext
+      environment:
+        - PYTHONPATH=/newGarden/
+      entrypoint:
+        - /servicecontext/gpioserver
