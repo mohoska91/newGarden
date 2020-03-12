@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+from flask import Flask, request, jsonify
+
+from gpiohandler.core.gpio import init_core, setup_gpio, is_valid_gpio, cleanup_core
+
+flask = Flask(__name__)
+init_core()
+
+
+@flask.route("/setup", methods=["POST"])
+def setup():
+    gpio_id = request.get_json().get("gpio", -1)
+
+    initial_status = request.get_json().get("initital_status", False)
+    if not is_valid_gpio(gpio_id):
+        return _get_invalid_request_response()
+    setup_gpio(gpio_id, initial_status)
+    return _get_success_request_response()
+
+
+@flask.route("/<gpio>", methods=["GET"])
+def status_of(gpio):
+    gpio = int(gpio)
+    if not is_valid_gpio(gpio):
+        return _get_invalid_request_response()
+    return jsonify({"gpio_status": get_gpio_status(gpio)})
+
+
+@flask.route("/<gpio>/set", methods=["POST"])
+def set_status_of(gpio):
+    gpio = int(gpio)
+    if not is_valid_gpio(gpio):
+        return _get_invalid_request_response()
+    status = request.get_json().get("status")
+    if status is None:
+        return _get_invalid_request_response()
+    setup_gpio(int(gpio), status)
+    return _get_success_request_response()
+
+
+@flask.route("/cleanup", methods=["POST"])
+def cleanup():
+    cleanup_core()
+    return _get_success_request_response()
+
+
+def _get_success_request_response():
+    return _get_request_response({"success": True}, 200)
+
+
+def _get_invalid_request_response():
+    return _get_request_response({"error": "Invalid request"}, 400)
+
+
+def _get_not_found_resource_request_response():
+    return _get_request_response({"error": "Requested resource not found"}, 404)
+
+
+def _get_request_response(data:dict, code: int):
+    resp = jsonify(data)
+    resp.status_code = code
+    return resp
+
+
+flask.run(host="0.0.0.0", debug=True)

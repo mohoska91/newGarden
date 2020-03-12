@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+from argparse import ArgumentParser
+
+from flask import Flask
+
+from gardenapp.control import control
+from gardenapp.garden import data
+
+argparser = ArgumentParser()
+
+argparser.add_argument("--redis-host", default="localhost", type=str, help="Redis server host")
+argparser.add_argument("--redis-port", default=6379, type=int, help="Redis server port")
+args = argparser.parse_args()
+
+flask = Flask(__name__)
+flask.config["REDIS_HOST"] = args.redis_host
+flask.config["REDIS_PORT"] = args.redis_port
+flask.register_blueprint(control)
+flask.register_blueprint(data)
+flask.run(host="0.0.0.0", port=5001)
