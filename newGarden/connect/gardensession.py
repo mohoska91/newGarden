@@ -14,7 +14,7 @@ _DB_URL_TEMPLATE = "sqlite://{}"
 class GardenSession:
     DB_PATH = '/datadb/garden.db'
 
-    def __init__(self, db_path: str = _DB_URL_TEMPLATE.format(DB_PATH)):
+    def __init__(self, db_path: str = _DB_URL_TEMPLATE.format(_DB_PATH)):
         self._engine = create_engine(
             db_path,
             echo=True
